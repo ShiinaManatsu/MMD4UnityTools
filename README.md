@@ -20,8 +20,7 @@ This can fill the abc file material with pmx material list exported from pmx edi
 #### Step by step
 
 * Get pmx editor plugin [Here](https://github.com/ShiinaManatsu/PmxEditorPlugins "PmxEditorPlugins")
-* Load your model and save to json
-  ![alt text][menu]
+* Load your model and save to json ![alt text][save]
 * Load all model files to the untiy project
 * Add .abc model to the scene
 * Select model, all texture needed and json file just created
