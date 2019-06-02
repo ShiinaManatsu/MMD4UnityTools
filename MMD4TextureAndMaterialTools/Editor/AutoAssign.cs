@@ -1,9 +1,7 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Newtonsoft.Json;
-using System.IO;
 
 namespace MMD4MaterialTools
 {

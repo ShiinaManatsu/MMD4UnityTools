@@ -1,6 +1,6 @@
 # MMD4UnityTools
 
-Tools for unity helps make mmd easy
+Tools for unity helps make mmd easy, target as 2019 or newer, in 2018 you'll need some modify
 
 ## Installation
 

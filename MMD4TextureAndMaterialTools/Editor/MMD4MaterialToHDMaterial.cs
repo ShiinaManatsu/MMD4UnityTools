@@ -10,7 +10,7 @@ namespace MMD4MaterialTools
     public class MMD4MaterialToHDMaterial : Editor
     {
         [MenuItem("MMDHelper/MMD4MaterialToHDMaterial")]
-        [MenuItem("Assets/MMDHelper/Update To Lit Material")]
+        [MenuItem("Assets/MMDHelper/Upgrade To Lit Material")]
         public static void CreateAssetBunldes()
         {
             foreach (var file in Selection.objects)

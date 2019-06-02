@@ -31,6 +31,31 @@ namespace MMD4MaterialTools
         }
 
         /// <summary>
+        /// Save material to assets
+        /// </summary>
+        /// <param name="hdrpMaterial">The material will be saved</param>
+        /// <param name="file">Selected texture file</param>
+        /// <param name="newFilename">File name</param>
+        public static void SaveMaterial(Material hdrpMaterial, UnityEngine.Object file,string newFilename)
+        {
+            var path = AssetDatabase.GetAssetPath(file.GetInstanceID()).Split('/');
+            path[path.Length - 2] = "Materials";
+
+            var fixedPath = string.Empty;
+            for (int i = 0; i < path.Length - 1; i++)
+            {
+                fixedPath += path[i] + "/";
+            }
+            if (!AssetDatabase.IsValidFolder(fixedPath.Remove(fixedPath.Length - 1)))
+            {
+                // 11 means the length of "Materials/" add 1
+                var p = fixedPath.Remove(fixedPath.Length - 11);
+                AssetDatabase.CreateFolder(p, "Materials");
+            }
+            AssetDatabase.CreateAsset(hdrpMaterial, fixedPath + newFilename+".mat");
+        }
+
+        /// <summary>
         /// Set material 
         /// </summary>
         /// <param name="material"></param>
