@@ -1,39 +1,69 @@
 # MMD4UnityTools
 
-Tools for unity helps make mmd easy, target as 2019 or newer, in 2018 you'll need some modify
+Be more efficient in HDRP to make mmd!
 
 ## Installation
 
-Download the unitypackage to you project
+Download and import the unitypackage to you project from the release tab.
+
+After import the package, the "MMDExtensions" menu will appeard.
+![alt text][menu1]
+
+*Update: Now you can find the menu item in both title bar and right click context menu.
+![alt text][menu2]
 
 ## Usage
 
-After install there will be a "MMDHelper" menu added
+### MMD Extensions for material
 
-menu: 
-![alt text][menu]
+#### Upgrade MMD4 Material (HDRP)
 
-### Auto Assign
+For the model converted by MMD4Mecanim, you can use `Upgrade MMD4 Material (HDRP)` to convert material that create by MMD4Mecanim. But first, you need to delete all the shader that contains in the MMD4Mecanim package, you can find them in `Assets/MMD4Mecanim/Shaders`.
 
-This can fill the abc file material with pmx material list exported from pmx editor
+To use this function, you'll need to extract all the materials from the fbx inspector by click the `Extract Materials` button.
 
-#### Step by step
+![alt text][InstructionMMD4Mat]
 
-* Get pmx editor plugin [Here](https://github.com/ShiinaManatsu/PmxEditorPlugins "PmxEditorPlugins")
-* Load your model and save to json ![alt text][save]
-* Load all model files to the untiy project
-* Add .abc model to the scene
-* Select model, all texture needed and json file just created
-* Press auto assign then finish assign and will save all material to assets
+Then you need to select both pmx file and materials just extracted and click `Upgrade MMD4 Material (HDRP)`.
 
-### MMD4Material To HDMaterial
+#### Upgrade Blender Materials
 
-Select the material created by MMD4Mecanim and right click on it and click MMDHelper-Upgrade To Lit Material
+For the fbx model that export from blender mmdtools or Cats, you need to extract the material just like what we just do, because of the different of material name, we don't merge the function together, so agin, you need to select both pmx file and materials just extracted and click `Upgrade Blender Materials`.
 
-### Texture To HDMaterial
+#### Upgrade ABC Model Material
 
-Select texture file right click on it and click MMDHelper-Create Lit Material wil create hdrp lit material with selected texture
+For the abc model exported from MMD Bridge, you need to select both you abc model in the hierarchy and the pmx you use in MMD Bridge, then click `Upgrade ABC Model Material`, it will ask you to save the new materials where you can modify them later.
+
+![alt text][InstructionUpgradeABC]
 
 
-[menu]:https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/Menu.png "Menu"
-[save]:https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/SaveJson.png "Save to json"
+#### Create Materials From Textures
+
+This use to create materials from the textures you selected, new materials will be save in the same folder level but the folder will be named as `Materials`
+
+### MMD Extensions for VMD file
+
+There are two method in the VMD menu that use for create camera animation and morph animation
+
+![alt text][VMDMenu]
+
+#### Create Camera Animation
+
+For create a camera animation clip, you need to right click on a vmd file that used for camera and click `Create Camera Animation`, it will create a new clip in the same place.
+
+#### Create Morph Animation
+
+For create a morph animation clip, you need to select the game object in the hierarchy where a mesh renderer has the `BlendShapes` property, then select the vmd file and click `Create Morph Animation`, it will create a new clip in the same place.
+
+![alt text][CreateMorphAnimation]
+
+# Credits
+[mmd-for-unity](https://github.com/mmd-for-unity-proj/mmd-for-unity)
+
+
+[menu1]:https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/Menu1.png "Menu1"
+[menu2]:https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/Menu2.png "Menu2"
+[VMDMenu]:https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/VMDMenu.png "VMDMenu"
+[InstructionUpgradeABC]:https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/InstructionUpgradeABC.png "InstructionUpgradeABC"
+[InstructionMMD4Mat]:https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/InstructionMMD4Mat.png "InstructionMMD4Mat"
+[CreateMorphAnimation]:https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/CreateMorphAnimation.png "CreateMorphAnimation"
