@@ -6,10 +6,12 @@ Be more efficient in HDRP to make mmd!
 
 Download and import the unitypackage to you project from the release tab.
 
-After import the package, the "MMDExtensions" menu will appeard.
+After import the package, the "MMDExtensions" menu will appear.
+
 ![alt text][menu1]
 
 *Update: Now you can find the menu item in both title bar and right click context menu.
+
 ![alt text][menu2]
 
 ## Usage
