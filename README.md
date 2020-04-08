@@ -10,7 +10,7 @@ After import the package, the "MMDExtensions" menu will appear.
 
 ![alt text][menu1]
 
-*Update: Now you can find the menu item in both title bar and right click context menu.
+*1.1.0.1 Update: Now you can find the menu item in both title bar and right click context menu.
 
 ![alt text][menu2]
 
@@ -28,9 +28,13 @@ To use this function, you'll need to extract all the materials from the fbx insp
 
 Then you need to select both pmx file and materials just extracted and click `Upgrade MMD4 Material (HDRP)`.
 
+*1.1.0.3 Update: Now you can only select the materials without select specific pmx file, but you can still specify the pmx file if you want
+
 #### Upgrade Blender Materials
 
 For the fbx model that export from blender mmdtools or Cats, you need to extract the material just like what we just do, because of the different of material name, we don't merge the function together, so agin, you need to select both pmx file and materials just extracted and click `Upgrade Blender Materials`.
+
+*1.1.0.3 Update: Now you can only select the materials without select specific pmx file, but you can still specify the pmx file if you want
 
 #### Upgrade ABC Model Material
 
