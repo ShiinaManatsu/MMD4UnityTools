@@ -22,12 +22,7 @@ namespace MMDExtensions
         [MenuItem("Assets/MMDExtensions/Upgrade MMD4 Material (HDRP)")]
         public static void UpgradeMaterial()
         {
-            var pmx = from x in Selection.objects
-                      where x is DefaultAsset && AssetDatabase.GetAssetPath(x).ToUpper().Contains("PMX")
-                      select x;
-
-            var pmx_format = LoadPmxMaterials(pmx.First());
-            var pmxPath = AssetDatabase.GetAssetPath(pmx.First());
+            GetPmx(out string pmxPath, out PMX.PMXFormat pmx_format);
 
             var materials = from mat in Selection.objects
                             where mat is Material
@@ -57,12 +52,7 @@ namespace MMDExtensions
         [MenuItem("Assets/MMDExtensions/Upgrade Blender Materials")]
         public static void UpgradeMaterialBlender()
         {
-            var pmx = from x in Selection.objects
-                      where x is DefaultAsset && AssetDatabase.GetAssetPath(x).ToUpper().Contains("PMX")
-                      select x;
-
-            var pmx_format = LoadPmxMaterials(pmx.First());
-            var pmxPath = AssetDatabase.GetAssetPath(pmx.First());
+            GetPmx(out string pmxPath, out PMX.PMXFormat pmx_format);
 
             var materials = from mat in Selection.objects
                             where mat is Material
@@ -367,6 +357,44 @@ namespace MMDExtensions
                 AssetDatabase.CreateFolder(p, "Materials");
             }
             AssetDatabase.CreateAsset(hdrpMaterial, fixedPath + newFilename + ".mat");
+        }
+
+        /// <summary>
+        /// Load the pmx
+        /// </summary>
+        /// <param name="pmxPath">The pmx path we can get</param>
+        /// <param name="pmx_format">The parsed pmx object</param>
+        public static void GetPmx(out string pmxPath,out PMX.PMXFormat pmx_format)
+        {
+
+            var pmx = from x in Selection.objects
+                      where x is DefaultAsset && AssetDatabase.GetAssetPath(x).ToUpper().Contains("PMX")
+                      select x;
+
+            Object pmxObject = null;
+            pmxPath = "";
+
+            if (pmx.ToList().Count != 0)
+            {
+                pmxObject = pmx.First();
+                pmxPath = AssetDatabase.GetAssetPath(pmx.First());
+            }
+            else
+            {
+                var path = AssetDatabase.GetAssetPath(Selection.objects.First());
+                path = path.Remove(path.LastIndexOf("/"));
+                path = path.Remove(path.LastIndexOf("/"));
+
+                var pmxQueue = from guid in AssetDatabase.FindAssets("", new[] { path })
+                               select AssetDatabase.GUIDToAssetPath(guid) into p
+                               group p by p.EndsWith(".pmx", true, System.Globalization.CultureInfo.CurrentCulture) into g
+                               where g.Key
+                               select g;
+                pmxPath = pmxQueue.First().First();
+                pmxObject = AssetDatabase.LoadAssetAtPath<DefaultAsset>(pmxPath);
+            }
+
+            pmx_format = LoadPmxMaterials(pmxObject);
         }
 
         /// <summary>
