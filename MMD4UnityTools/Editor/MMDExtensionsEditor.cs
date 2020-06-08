@@ -133,7 +133,7 @@ namespace MMDExtensions
             // sign it
 
             var textures = from x in pmx_format.material_list.material
-                           select new { Path = pmx_format.texture_list.texture_file[x.usually_texture_index], Name = x.name };
+                           select new { Path = x.usually_texture_index == uint.MaxValue ? string.Empty : pmx_format.texture_list.texture_file[x.usually_texture_index], Name = x.name };
 
             var materials = new List<Material>();
 
@@ -143,15 +143,16 @@ namespace MMDExtensions
                 mat.name = texture.Name;
                 try
                 {
-                    if (texture.Path.ToUpper().EndsWith(".PNG") || texture.Path.ToUpper().EndsWith(".JPG"))
+                    if(texture.Path.Equals(string.Empty))
+                    {
+                        mat.SetTexture("_BaseColorMap", Texture2D.redTexture);
+                    }
+                    else
                     {
                         var path = Path.Combine(pmxPath.Remove(pmxPath.LastIndexOf('/')), texture.Path);
                         mat.SetTexture("_BaseColorMap", AssetDatabase.LoadAssetAtPath<Texture2D>(path));
                     }
-                    else
-                    {
-                        mat.SetTexture("_BaseColorMap", Texture2D.redTexture);
-                    }
+
                 }
                 catch
                 {
