@@ -1,0 +1,10 @@
+{
+	"name": "com.shiinamanatsu.mmd4unitytools",
+	"displayName":"MMD4UnityTools",
+	"version": "1.2.0",
+	"unity": "2020.2",
+	"description": "Tools for unity HDRP helps make mmd easy",
+	"dependencies": {
+		"com.unity.uiwidgets": "1.5.4-preview.12"
+	}
+}
