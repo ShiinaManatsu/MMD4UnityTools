@@ -88,6 +88,6 @@ For create a morph animation clip, you need to select the game object in the hie
 [instructionupgradeabc]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/InstructionUpgradeABC.png 'InstructionUpgradeABC'
 [instructionmmd4mat]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/InstructionMMD4Mat.png 'InstructionMMD4Mat'
 [createmorphanimation]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/CreateMorphAnimation.png 'CreateMorphAnimation'
-[materiallibshowcase]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/MaterialLibShowcase.png 'MaterialLibShowcase'
+[materiallibshowcase]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/MaterialLibShowcase.gif 'MaterialLibShowcase'
 [inspectorwindow]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/InspectorWindow.png 'InspectorWindow'
 [packagemanagergit]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/PackageManagerGit.png 'PackageManagerGit'
