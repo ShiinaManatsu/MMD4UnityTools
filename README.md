@@ -8,86 +8,76 @@ Download and import the unitypackage to you project from the release tab.
 
 After import the package, the "MMDExtensions" menu will appear.
 
-### 1.2.0 Update:
+### 2022.5 Update
 
-New inspector window build with UIWidgets
+Better organized menu structure, more easy to use, more functionalities!
 
-![alt text][inspectorwindow]
+For assets, all menus are under `MMDExtensions`.
 
-For now, only `Material Lib` works, in this section, you can apply material to gameobject by click on list
+For editor windows, the entry named `MMDExtensions` in the toolbar.
 
-![alt text][materiallibshowcase]
+### For Alembic GameObject
 
-### 1.1.3 Update:
+A script named `AlembicLooseSeperator` can seperate alembic model to many submesh by linked face, the best use cace I think will be a alembic exported from Marvelous Design, you can fill materails with each fabric.
 
-Now you can only select the materials without select specific pmx file, but you can still specify the pmx file if you want
+Add this script to a `AlembicStreamPlayer`, script will find where the abc file located and call blender to seperate it, then set submesh to meshfilter. You have to install blender first.
 
-#### Upgrade Blender Materials
+### For Assets
 
-For the fbx model that export from blender mmdtools or Cats, you need to extract the material just like what we just do, because of the different of material name, we don't merge the function together, so agin, you need to select both pmx file and materials just extracted and click `Upgrade Blender Materials`.
+Tools categoried by resources, materials, animations, textures and so on.
 
-### 1.1.3 Update:
+##### `Resources/Import folder as junction`
+Now you can link external folder to you project with junction point, this will create a junction point in your assets folder, it works similar as a shortcut, but unity will import assets from it, so you can have a assets library independent from you unity project and reuse them with only one copy. If your unity crashes after upgrade to another version, that maybe caused by juntion point, delete the folder you link in your project can fix it and reimport it later.
 
-Now you can only select the materials without select specific pmx file, but you can still specify the pmx file if you want
+#### `Materials/From Standard PBR`
 
-![alt text][menu1]
+Toolset to create HDRP materials from textures you create with a metallic pbr workflow.
 
-### 1.1.0 Update:
+`Create HDRP Material` will create a hdrp material by textures you selected. By select `BaseColor`, `NormalMap`, `Metallic` and any other supported textures, will create a hdrp mask texture from them, this menu only create one material at once, selected texture must be used by a single material.
 
-Now you can find the menu item in both title bar and right click context menu.
+`Create HDRP Material By selected folders` this method will trade each folder a material, which contains textures used by a single material.
 
-![alt text][menu2]
+`Upgrade Mateirals` just replace your material with hdrp shader, and reassign textures to correct slots.
 
-## Usage
+#### `Materials/Create/Selected As BaseColor`
+Create a hdrp lit material use selected texture as basecolor.
 
-### MMD Extensions for material
+#### `Materials/Upgrade`
 
-#### Upgrade MMD4 Material (HDRP)
+Toolset to create or assign basecolor texture reading from pmx file.
+For alembic exported from mmdbridge, you select pmx file and the alembic model imported to hierachy. This matchs materials by meshrender order to pmx mateiral order.
+For models exported from blender with mmdtools, you select pmx file and materials create form model. This matchs materials by name.
+For models create from mmd4mecanim, you select pmx file and materials create form model. This matchs materials by index extract from name.
 
-For the model converted by MMD4Mecanim, you can use `Upgrade MMD4 Material (HDRP)` to convert material that create by MMD4Mecanim. But first, you need to delete all the shader that contains in the MMD4Mecanim package, you can find them in `Assets/MMD4Mecanim/Shaders`.
+The methods listed in material section may not works properly.
 
-To use this function, you'll need to extract all the materials from the fbx inspector by click the `Extract Materials` button.
+#### `Animation/Create`
 
-![alt text][instructionmmd4mat]
+Create camera animation not works properly.
+To create morph animation, you select the mesh gameobject which have shapekey and vmd file, this will craete an animation clip for the selected gameobject.
 
-Then you need to select both pmx file and materials just extracted and click `Upgrade MMD4 Material (HDRP)`.
+#### `Animation/Set Interpolation For Stopmotion`
+Set animation clip inTangent to `PositiveInfinity`, I use this for camera animation create from blender. When the game or you render to video, the fps are higher then 30fps, unity will interpolate camera between frame, not constantly, apply a const interpolation will gives you a stop motion animation or cut scene.
 
-#### Upgrade ABC Model Material
+Unity can import blender file as gameobject, create a empty blender project, add a camera, the import camera aniamtion with [MMDTools](https://github.com/UuuNyaa/blender_mmd_uuunyaa_tools) then save to your unity project, expand blender obejct in unity, select animation clip and press `Ctrl D`, this will duplicate a clip you can modify
 
-For the abc model exported from MMD Bridge, you need to select both you abc model in the hierarchy and the pmx you use in MMD Bridge, then click `Upgrade ABC Model Material`, it will ask you to save the new materials where you can modify them later.
+#### `Texture/InversChannel`
 
-![alt text][instructionupgradeabc]
+Inverse selected channel, most used for roughness texture.
 
-#### Create Materials From Textures
+### Editor Windows
 
-This use to create materials from the textures you selected, new materials will be save in the same folder level but the folder will be named as `Materials`
+#### `Material/Material Transfer`
 
-### MMD Extensions for VMD file
+Transfer mateiral from model to another model, they may have some same parts or newly exported, you can then transfer materials by vertex count or just orders to other model so you don't need to assign them again manually.
 
-There are two method in the VMD menu that use for create camera animation and morph animation
+#### `Texture/`
 
-![alt text][vmdmenu]
+`Gradient To Texture` Create a gradient texture from gradient curve.
 
-#### Create Camera Animation
+`Texture Combiner` Craete a texture that you can fill each channel with a single texture, e.g. to create a hdrp mask texture from textures exported with pbr workflow.
 
-For create a camera animation clip, you need to right click on a vmd file that used for camera and click `Create Camera Animation`, it will create a new clip in the same place.
-
-#### Create Morph Animation
-
-For create a morph animation clip, you need to select the game object in the hierarchy where a mesh renderer has the `BlendShapes` property, then select the vmd file and click `Create Morph Animation`, it will create a new clip in the same place.
-
-![alt text][createmorphanimation]
 
 # Credits
 
 [mmd-for-unity](https://github.com/mmd-for-unity-proj/mmd-for-unity)
-
-[menu1]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/Menu1.png 'Menu1'
-[menu2]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/Menu2.png 'Menu2'
-[vmdmenu]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/VMDMenu.png 'VMDMenu'
-[instructionupgradeabc]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/InstructionUpgradeABC.png 'InstructionUpgradeABC'
-[instructionmmd4mat]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/InstructionMMD4Mat.png 'InstructionMMD4Mat'
-[createmorphanimation]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/CreateMorphAnimation.png 'CreateMorphAnimation'
-[materiallibshowcase]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/MaterialLibShowcase.gif 'MaterialLibShowcase'
-[inspectorwindow]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/InspectorWindow.png 'InspectorWindow'
-[packagemanagergit]: https://raw.githubusercontent.com/ShiinaManatsu/MMD4UnityTools/master/Images/PackageManagerGit.png 'PackageManagerGit'
