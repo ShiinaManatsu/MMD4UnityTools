@@ -12,7 +12,7 @@ public class StandardPBRTextureTool
 {
     private static readonly List<string> suffix = new() { "metallic", "ambientOcclusion", "roughness", "OCC", "COLOR", "ROUGH", "SPEC" };
 
-    private const string csPath = "Assets/Editor/MMD4UnityTools/StandardPBR2HDRP/CombineTexture.compute";
+    private const string csPath = "Assets/MMD4UnityTools/Material/Editor/StandardPBR2HDRP/CombineTexture.compute";
 
     private static void TransformToPBRMask()
     {
@@ -167,7 +167,7 @@ public class StandardPBRTextureTool
     /// Set standard material to HDRP/Lit shader and map textures to correct slot.
     /// This will be useful when you create model materials from model importer.
     /// </summary>
-    [MenuItem("Assets/MMDExtensions/Materials/FromStandardPBR/UpgradeMateirals")]
+    [MenuItem("Assets/MMDExtensions/Materials/FromStandardPBR/Upgrade Mateirals")]
     public static void UpgradeMateirals()
     {
         var mats = Selection.GetFiltered<Material>(SelectionMode.Assets);

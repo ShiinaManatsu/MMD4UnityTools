@@ -28,7 +28,7 @@ namespace MMD4UnityTools.Editor
         [MenuItem("MMDExtensions/Texture/Texture Combiner")]
         public static void OpenWindow()
         {
-            GetWindow<EditorWindow>("Texture Combiner").Show();
+            GetWindow<TextureCombinerEditorWindow>("Texture Combiner").Show();
         }
 
         private void Combine()
@@ -101,22 +101,22 @@ namespace MMD4UnityTools.Editor
         {
             GUILayout.BeginHorizontal();
             r = r.ObjectField("R: Metallic", false);
-            invertR = EditorGUILayout.Toggle(invertR);
+            invertR = EditorGUILayout.Toggle("Invert R", invertR);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             g = g.ObjectField("R: AO", false);
-            invertG = EditorGUILayout.Toggle(invertG);
+            invertG = EditorGUILayout.Toggle("Invert G", invertG);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             b = b.ObjectField("R: DetailMask", false);
-            invertB = EditorGUILayout.Toggle(invertB);
+            invertB = EditorGUILayout.Toggle("Invert B", invertB);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             a = a.ObjectField("R: Smoothness", false);
-            invertA = EditorGUILayout.Toggle(invertA);
+            invertA = EditorGUILayout.Toggle("Invert A", invertA);
             GUILayout.EndHorizontal();
 
             if (GUILayout.Button("Combine"))
