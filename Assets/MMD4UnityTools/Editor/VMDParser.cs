@@ -37,19 +37,19 @@ namespace MMDExtensions.Tools
             List<VMDMorphFrame> morphs = new List<VMDMorphFrame>();
             List<VMDCameraFrame> cameras = new List<VMDCameraFrame>();
 
-            Func<byte> getBoneByte = () =>
+            byte getBoneByte()
             {
                 var bt = reader.ReadByte();
                 reader.ReadBytes(3);
                 return bt;
-            };
+            }
 
-            Func<byte> getCameraByte = () =>
+            byte getCameraByte()
             {
                 var bt = reader.ReadByte();
                 reader.ReadBytes(20);
                 return bt;
-            };
+            }
 
             var bcount = reader.ReadUInt32();
             /// Bone list, length 4-byte

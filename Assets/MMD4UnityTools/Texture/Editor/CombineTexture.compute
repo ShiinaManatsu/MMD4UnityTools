@@ -1,0 +1,34 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> Result;
+
+Texture2D<float4> R;
+Texture2D<float4> G;
+Texture2D<float4> B;
+Texture2D<float4> A;
+
+bool oneMinusR;
+bool oneMinusG;
+bool oneMinusB;
+bool oneMinusA;
+
+[numthreads(8, 8, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+	// TODO: insert actual code here!
+
+	float r = R[id.xy].r;
+	float g = G[id.xy].g;
+	float b = B[id.xy].b;
+	float a = A[id.xy].r;
+
+	r = oneMinusR ? 1 - r : r;
+	g = oneMinusG ? 1 - g : g;
+	b = oneMinusB ? 1 - b : b;
+	a = oneMinusA ? 1 - a : a;
+
+	Result[id.xy] = float4(r, g, b, a);
+}

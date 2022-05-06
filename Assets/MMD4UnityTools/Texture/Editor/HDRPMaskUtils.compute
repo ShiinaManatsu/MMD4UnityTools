@@ -1,0 +1,22 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel InversMaskChannel
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> Result;
+Texture2D<float4> Input;
+
+bool InverseMetallic;   //  R
+bool InverseAO;   //  G
+bool InverseDetail;   //  B
+bool InverseSmoothness;   //  A
+
+[numthreads(8,8,1)]
+void InversMaskChannel(uint3 id : SV_DispatchThreadID)
+{
+    float r = InverseMetallic ? 1 - Input[id.xy].x : Input[id.xy].x;
+    float g = InverseAO ? 1 - Input[id.xy].y : Input[id.xy].y;
+    float b = InverseDetail ? 1 - Input[id.xy].z : Input[id.xy].z;
+    float a = InverseSmoothness ? 1 - Input[id.xy].w : Input[id.xy].w;
+    Result[id.xy] = float4(r, g, b, a);
+}

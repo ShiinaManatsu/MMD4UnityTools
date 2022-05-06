@@ -1,0 +1,17 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> Result;
+Texture2D<float4> Metallic;
+Texture2D<float4> AO;
+Texture2D<float4> Roughness;
+
+[numthreads(1,1,1)]
+void CSMain (uint3 id : SV_GroupID)
+{
+    // TODO: insert actual code here!
+
+    Result[id.xy] = float4(Metallic[id.xy].r, AO[id.xy].r,0, 1 - Roughness[id.xy].r);
+}

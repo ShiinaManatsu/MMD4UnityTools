@@ -1,22 +1,24 @@
 ﻿/*
-                                        DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
-                                                Version 2, December 2004 
+                                        DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+                                                Version 2, December 2004
 
-                                Copyright (C) 2004 Sam Hocevar <sam@hocevar.net> 
+                                Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
 
-                                Everyone is permitted to copy and distribute verbatim or modified 
-                                copies of this license document, and changing it is allowed as long 
-                                as the name is changed. 
+                                Everyone is permitted to copy and distribute verbatim or modified
+                                copies of this license document, and changing it is allowed as long
+                                as the name is changed.
 
-                                        DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
-                                TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 
+                                        DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+                                TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
                                 0. You just DO WHAT THE FUCK YOU WANT TO.
  */
 
- /*
-  Current Version: 1.1.0.1 +2
-  */
+/*
+ Current Version: 1.1.0.1 +2
+
+ Set empty texture to null
+ */
 
 using MMDExtensions.Tools;
 using System.Collections.Generic;
@@ -36,19 +38,14 @@ namespace MMDExtensions
     public class MMDExtensionsEditor : Editor
     {
         /// <summary>
-        /// Upgrade MMD4 materials to HDRP Lit Material 
+        /// Upgrade MMD4 materials to HDRP Lit Material, you need to select both pmx and materials
         /// </summary>
-        [MenuItem("MMDExtensions/Upgrade MMD4 Material (HDRP)")]
-        [MenuItem("Assets/MMDExtensions/Upgrade MMD4 Material (HDRP)")]
+        [MenuItem("Assets/MMDExtensions/Materials/Upgrade/Assign MMD4 Material(HDRP) From PMX")]
         public static void UpgradeMaterial()
         {
             GetPmx(out string pmxPath, out PMX.PMXFormat pmx_format);
 
-            var materials = from mat in Selection.objects
-                            where mat is Material
-                            select mat as Material;
-
-            foreach (var mat in materials)
+            foreach (var mat in Selection.GetFiltered<Material>(SelectionMode.Assets))
             {
                 var index = int.Parse(mat.name.Split('.').First());
                 try
@@ -59,54 +56,48 @@ namespace MMDExtensions
                 }
                 catch
                 {
-                    mat.SetTexture("_BaseColorMap", Texture2D.redTexture);
+                    mat.SetTexture("_BaseColorMap", null);
                 }
             }
             System.GC.Collect();
         }
 
         /// <summary>
-        /// Upgrade materials that extracted from blender mmdtools fbx model
+        /// Upgrade materials that extracted from blender mmdtools fbx model, you need to select both pmx and materials
         /// </summary>
-        [MenuItem("MMDExtensions/Upgrade Blender Materials")]
-        [MenuItem("Assets/MMDExtensions/Upgrade Blender Materials")]
+        [MenuItem("Assets/MMDExtensions/Materials/Upgrade/Assign Blender Materials From PMX")]
         public static void UpgradeMaterialBlender()
         {
             GetPmx(out string pmxPath, out PMX.PMXFormat pmx_format);
 
-            var materials = from mat in Selection.objects
-                            where mat is Material
-                            select mat as Material;
-
-            foreach (var mat in materials)
+            foreach (var mat in Selection.GetFiltered<Material>(SelectionMode.Assets))
             {
-                var name = mat.name;
-                var index = pmx_format.material_list.material.Where((x) => x.name.Contains(name)).First().usually_texture_index;
+                var index = pmx_format.material_list.material.ToList().Find((x) => x.name.Contains(mat.name)).usually_texture_index;
                 try
                 {
                     var texture = pmx_format.texture_list.texture_file[index];
                     texture = !texture.Split('.').Last().ToLower().Contains("dds") ? texture : texture.Remove(texture.LastIndexOf(".")) + ".png";
                     texture = Path.Combine(pmxPath.Remove(pmxPath.LastIndexOf('/')), texture);
-                    mat.SetTexture("_BaseColorMap", AssetDatabase.LoadAssetAtPath<Texture2D>(texture));
+                    var t = AssetDatabase.LoadAssetAtPath<Texture2D>(texture);
+                    mat.SetTexture("_BaseColorMap", t);
                 }
                 catch
                 {
-                    mat.SetTexture("_BaseColorMap", Texture2D.redTexture);
+                    mat.SetTexture("_BaseColorMap", null);
                 }
             }
             System.GC.Collect();
         }
 
         /// <summary>
-        /// Upgrade materials from abc game object that exported from mmd bridge
+        /// Upgrade materials from abc game object that exported from mmd bridge, you need to select both pmx and alembic model.
         /// </summary>
-        [MenuItem("MMDExtensions/Upgrade ABC Model Material")]
-        [MenuItem("Assets/MMDExtensions/Upgrade ABC Model Material")]
+        [MenuItem("Assets/MMDExtensions/Materials/Upgrade/Assign Alembic Materials From PMX")]
         public static void UpgradeABCMaterial()
         {
             var objs = Selection.objects;
             var pmx = from x in objs
-                      where x is DefaultAsset && AssetDatabase.GetAssetPath(x).ToUpper().Contains("PMX")
+                      where x is DefaultAsset && AssetDatabase.GetAssetPath(x).ToLower().Contains("pmx")
                       select x;
             var gameObjs = Selection.gameObjects.First();
 
@@ -114,7 +105,6 @@ namespace MMDExtensions
 
             if (savePath == "")
             {
-                Debug.Log("User canceled");
                 return;
             }
             else
@@ -133,7 +123,7 @@ namespace MMDExtensions
             // sign it
 
             var textures = from x in pmx_format.material_list.material
-                           select new { Path = x.usually_texture_index == uint.MaxValue ? string.Empty : pmx_format.texture_list.texture_file[x.usually_texture_index], Name = x.name };
+                           select new { Path = pmx_format.texture_list.texture_file[x.usually_texture_index], Name = x.name };
 
             var materials = new List<Material>();
 
@@ -143,27 +133,26 @@ namespace MMDExtensions
                 mat.name = texture.Name;
                 try
                 {
-                    if(texture.Path.Equals(string.Empty))
-                    {
-                        mat.SetTexture("_BaseColorMap", Texture2D.redTexture);
-                    }
-                    else
+                    if (texture.Path.ToUpper().EndsWith(".PNG") || texture.Path.ToUpper().EndsWith(".JPG"))
                     {
                         var path = Path.Combine(pmxPath.Remove(pmxPath.LastIndexOf('/')), texture.Path);
                         mat.SetTexture("_BaseColorMap", AssetDatabase.LoadAssetAtPath<Texture2D>(path));
                     }
-
+                    else
+                    {
+                        mat.SetTexture("_BaseColorMap", Texture2D.redTexture);
+                    }
                 }
                 catch
                 {
-                    mat.SetTexture("_BaseColorMap", Texture2D.redTexture);
+                    mat.SetTexture("_BaseColorMap", null);
                 }
                 materials.Add(mat);
             }
 
             for (int i = 0; i < meshRenderers.Length; i++)
             {
-                meshRenderers[i].material = materials[i];
+                meshRenderers[i].sharedMaterial = materials[i];
 
                 AssetDatabase.CreateAsset(materials[i], Path.Combine(savePath, materials[i].name + ".mat"));
             }
@@ -172,19 +161,14 @@ namespace MMDExtensions
         /// <summary>
         /// Create basic HDRP Lit Material from selected textures
         /// </summary>
-        [MenuItem("MMDExtensions/Create Materials From Textures")]
-        [MenuItem("Assets/MMDExtensions/Create Materials From Textures")]
+        [MenuItem("Assets/MMDExtensions/Materials/Create/Selected To BaseColor")]
         public static void CreateAssetBunldes()
         {
-            foreach (var file in Selection.objects)
+            foreach (var file in Selection.GetFiltered<Texture2D>(SelectionMode.Assets))
             {
-                if (file.GetType() == typeof(Texture2D))
-                {
-                    Material hdrpMaterial = CreateMaterial();
-                    hdrpMaterial.SetTexture("_BaseColorMap", file as Texture2D);
-
-                    SaveMaterial(hdrpMaterial, file);
-                }
+                Material hdrpMaterial = CreateMaterial();
+                hdrpMaterial.SetTexture("_BaseColorMap", file);
+                SaveMaterial(hdrpMaterial, file);
             }
         }
 
@@ -193,7 +177,7 @@ namespace MMDExtensions
         /// <summary>
         /// Create camera animation assets
         /// </summary>
-        [MenuItem("Assets/VMD/Create Camera Animation")]
+        [MenuItem("Assets/MMDExtensions/Animation/Create/Camera Animation From VMD")]
         public static void CreateCameraAnimation()
         {
             string path = AssetDatabase.GetAssetPath(Selection.activeObject);
@@ -242,7 +226,6 @@ namespace MMDExtensions
                 var fov = from frame in orderedFrames
                           select new Keyframe(frame.FrameIndex * delta, (float)frame.FOV);
 
-
                 var xPostionCurve = new AnimationCurve(xPosition.ToArray());
                 var yPostionCurve = new AnimationCurve(YPosition.ToArray());
                 var zPostionCurve = new AnimationCurve(ZPosition.ToArray());
@@ -267,11 +250,11 @@ namespace MMDExtensions
         /// <summary>
         /// Create morph animation assets
         /// </summary>
-        [MenuItem("Assets/VMD/Create Morph Animation")]
+        [MenuItem("Assets/MMDExtensions/Animation/Create/Create Morph Animation")]
         public static void CreateMorphAnimation()
         {
             System.GC.Collect();
-            string path = AssetDatabase.GetAssetPath(Selection.activeObject);
+            string path = AssetDatabase.GetAssetPath(Selection.GetFiltered<DefaultAsset>(SelectionMode.Assets).FirstOrDefault());
 
             if (Path.GetExtension(path).ToUpper().Contains("VMD"))
             {
@@ -283,7 +266,6 @@ namespace MMDExtensions
 
                 var delta = 1 / animationClip.frameRate;
 
-
                 var keyframes = from keys in vmd.Morphs.ToLookup(k => k.MorphName, v => new Keyframe(v.FrameIndex * delta, v.Weight * 100))
                                 select keys;
 
@@ -292,10 +274,11 @@ namespace MMDExtensions
                     var name = package.Key;
 
                     var curve = new AnimationCurve(package.ToArray());
-                    var gameObjectName = Selection.gameObjects.First().name;
-                    var parentName = Selection.gameObjects.First().transform.parent.name;
+                    var gameobject = Selection.GetFiltered<GameObject>(SelectionMode.TopLevel).FirstOrDefault();
+                    var gameObjectName = gameobject.name;
+                    var parentName = gameobject.transform.parent.name;
 
-                    var mesh = Selection.gameObjects.First().GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                    var mesh = gameobject.GetComponent<SkinnedMeshRenderer>().sharedMesh;
                     var bsCounts = mesh.blendShapeCount;
                     var blendShapeNames = Enumerable.Range(0, bsCounts).ToList().ConvertAll(index => mesh.GetBlendShapeName(index));
                     try
@@ -313,13 +296,12 @@ namespace MMDExtensions
             }
         }
 
-        #endregion
+        #endregion VMD Methods
 
         #region Helper Methods
 
         public static PMX.PMXFormat LoadPmxMaterials(Object @object)
         {
-
             var pmxPath = AssetDatabase.GetAssetPath(@object);
             var dataPath = Application.dataPath;
             dataPath = dataPath.Remove(dataPath.Length - 6);
@@ -338,9 +320,9 @@ namespace MMDExtensions
         public static void SaveMaterial(Material hdrpMaterial, UnityEngine.Object file)
         {
             var path = AssetDatabase.GetAssetPath(file.GetInstanceID()).Split('/');
-            var filename = path[path.Length - 1];
+            var filename = path[^1];
             filename = filename.Remove(filename.LastIndexOf('.')) + ".mat";
-            path[path.Length - 2] = "Materials";
+            path[^2] = "Materials";
 
             var fixedPath = "";
             for (int i = 0; i < path.Length - 1; i++)
@@ -364,7 +346,7 @@ namespace MMDExtensions
         public static void SaveMaterial(Material hdrpMaterial, UnityEngine.Object file, string newFilename)
         {
             var path = AssetDatabase.GetAssetPath(file.GetInstanceID()).Split('/');
-            path[path.Length - 2] = "Materials";
+            path[^2] = "Materials";
 
             var fixedPath = string.Empty;
             for (int i = 0; i < path.Length - 1; i++)
@@ -385,9 +367,8 @@ namespace MMDExtensions
         /// </summary>
         /// <param name="pmxPath">The pmx path we can get</param>
         /// <param name="pmx_format">The parsed pmx object</param>
-        public static void GetPmx(out string pmxPath,out PMX.PMXFormat pmx_format)
+        public static void GetPmx(out string pmxPath, out PMX.PMXFormat pmx_format)
         {
-
             var pmx = from x in Selection.objects
                       where x is DefaultAsset && AssetDatabase.GetAssetPath(x).ToUpper().Contains("PMX")
                       select x;
@@ -419,7 +400,7 @@ namespace MMDExtensions
         }
 
         /// <summary>
-        /// Set material 
+        /// Set material
         /// </summary>
         /// <param name="material"></param>
         public static Material CreateMaterial()
@@ -430,9 +411,8 @@ namespace MMDExtensions
 #else
             return new Material(Shader.Find("HDRP/Lit"));
 #endif
-
         }
 
-        #endregion
+        #endregion Helper Methods
     }
 }
