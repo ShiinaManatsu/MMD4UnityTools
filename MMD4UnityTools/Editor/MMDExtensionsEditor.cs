@@ -291,10 +291,17 @@ namespace MMDExtensions
                     var name = package.Key;
 
                     var curve = new AnimationCurve(package.ToArray());
-                    var gameObjectName = Selection.gameObjects.First().name;
-                    var parentName = Selection.gameObjects.First().transform.parent.name;
 
-                    var mesh = Selection.gameObjects.First().GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                    varchara = GameObject.Find("U_Char_2");
+
+                    var gameObjectName = chara.name;
+                    var parentName = chara.transform.parent.name;
+                    var mesh = chara.GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                    //var gameObjectName = Selection.gameObjects.First().name;
+                    //var parentName = Selection.gameObjects.First().transform.parent.name;
+
+                    //var mesh = Selection.gameObjects.First().GetComponent<SkinnedMeshRenderer>().sharedMesh;
+
                     var bsCounts = mesh.blendShapeCount;
                     var blendShapeNames = Enumerable.Range(0, bsCounts).ToList().ConvertAll(index => mesh.GetBlendShapeName(index));
                     try
