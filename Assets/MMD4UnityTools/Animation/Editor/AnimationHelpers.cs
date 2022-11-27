@@ -90,48 +90,66 @@ namespace MMDExtensions
         public static void CreateMorphAnimation()
         {
             System.GC.Collect();
-            string path = AssetDatabase.GetAssetPath(Selection.GetFiltered<DefaultAsset>(SelectionMode.Assets).FirstOrDefault());
+            var path = AssetDatabase.GetAssetPath(Selection.GetFiltered<DefaultAsset>(SelectionMode.Assets).FirstOrDefault());
 
             if (Path.GetExtension(path).ToUpper().Contains("VMD"))
             {
+                var saveFolder = Path.GetDirectoryName(path).Replace("\\", "/");
+                var fileName = Path.GetFileNameWithoutExtension(path);
+
                 var stream = File.Open(path, FileMode.Open);
-
                 var vmd = VMDParser.ParseVMD(stream);
-
-                var animationClip = new AnimationClip() { frameRate = 30 };
-
-                var delta = 1 / animationClip.frameRate;
-
+                var selected = Selection.GetFiltered<GameObject>(SelectionMode.TopLevel).FirstOrDefault();
+                var smrs = Selection.GetFiltered<SkinnedMeshRenderer>(SelectionMode.Deep);
+                var animationClips = smrs.ToDictionary(x => x, _ => new AnimationClip() { frameRate = 30 });
+                var delta = 1 / 30f;
                 var keyframes = from keys in vmd.Morphs.ToLookup(k => k.MorphName, v => new Keyframe(v.FrameIndex * delta, v.Weight * 100))
                                 select keys;
 
-                foreach (var package in keyframes)
+                try
                 {
-                    var name = package.Key;
-
-                    var curve = new AnimationCurve(package.ToArray());
-                    var gameobject = Selection.GetFiltered<GameObject>(SelectionMode.TopLevel).FirstOrDefault();
-                    var gameObjectName = gameobject.name;
-                    var parentName = gameobject.transform.parent.name;
-
-                    var mesh = gameobject.GetComponent<SkinnedMeshRenderer>().sharedMesh;
-                    var bsCounts = mesh.blendShapeCount;
-                    var blendShapeNames = Enumerable.Range(0, bsCounts).ToList().ConvertAll(index => mesh.GetBlendShapeName(index));
-                    try
+                    AssetDatabase.StartAssetEditing();
+                    foreach (var smr in smrs)
                     {
-                        var registerName = blendShapeNames.Where(x => x.Split('.').Last() == name).First();
-                        animationClip.SetCurve($"{parentName}/{gameObjectName}", typeof(SkinnedMeshRenderer), $"blendShape.{registerName}", curve);
-                    }
-                    catch
-                    {
-                        continue;
+                        var animationClip = animationClips[smr];
+                        foreach (var package in keyframes)
+                        {
+                            var name = package.Key;
+
+                            var curve = new AnimationCurve(package.ToArray());
+
+                            var mesh = smr.sharedMesh;
+                            var bsCounts = mesh.blendShapeCount;
+                            var blendShapeNames = Enumerable.Range(0, bsCounts).ToList().ConvertAll(index => mesh.GetBlendShapeName(index));
+                            var registerName = blendShapeNames.Find(x => x.Split('.').Last() == name) ?? name;
+                            animationClip.SetCurve(GetTransformPathRecursively(smr.transform, selected.transform), typeof(SkinnedMeshRenderer), $"blendShape.{registerName}", curve);
+                        }
+                        var pathToSave = $"{saveFolder}/{fileName} - {smr.name}.anim";
+                        if (File.Exists(pathToSave))
+                        {
+                            AssetDatabase.DeleteAsset(pathToSave);
+                        }
+                        AssetDatabase.CreateAsset(animationClip, pathToSave);
                     }
                 }
-
-                AssetDatabase.CreateAsset(animationClip, path.Replace("vmd", "anim"));
+                finally
+                {
+                    AssetDatabase.StopAssetEditing();
+                }
             }
         }
 
         #endregion VMD Methods
+
+        private static string GetTransformPathRecursively(Transform transform, Transform top = null)
+        {
+            var name = transform.name;
+            if (transform.parent != null && transform.parent != top)
+            {
+                return $"{GetTransformPathRecursively(transform.parent)}/{name}";
+            }
+
+            return transform.name;
+        }
     }
 }

@@ -86,8 +86,8 @@ namespace MMD4UnityTools.Editor
         {
             foreach (var rendererTo in to)
             {
-                var meshTo = rendererTo.GetComponent<MeshFilter>().sharedMesh;
-                var match = from.Select(x => new { Renderer = x, Mesh = x.GetComponent<MeshFilter>().sharedMesh })
+                var meshTo = GetMeshFilter(rendererTo);
+                var match = from.Select(x => new { Renderer = x, Mesh = GetMeshFilter(x) })
                     .Where(x => x.Mesh.vertexCount == meshTo.vertexCount)
                     .FirstOrDefault();
                 if (match != null)
@@ -101,12 +101,24 @@ namespace MMD4UnityTools.Editor
             }
         }
 
+        private Mesh GetMeshFilter(Renderer renderer)
+        {
+            if (renderer is SkinnedMeshRenderer)
+            {
+                return (renderer as SkinnedMeshRenderer).sharedMesh;
+            }
+            else
+            {
+                return renderer.GetComponent<MeshFilter>().sharedMesh;
+            }
+        }
+
         private void TransferClosestVertexCount(Renderer[] from, Renderer[] to)
         {
             foreach (var rendererTo in to)
             {
-                var meshTo = rendererTo.GetComponent<MeshFilter>().sharedMesh;
-                var match = from.Select(x => new { Renderer = x, Mesh = x.GetComponent<MeshFilter>().sharedMesh })
+                var meshTo = GetMeshFilter(rendererTo);
+                var match = from.Select(x => new { Renderer = x, Mesh = GetMeshFilter(x) })
                     .OrderBy(x => Mathf.Abs(x.Mesh.vertexCount - meshTo.vertexCount))
                     .FirstOrDefault();
                 if (match != null)

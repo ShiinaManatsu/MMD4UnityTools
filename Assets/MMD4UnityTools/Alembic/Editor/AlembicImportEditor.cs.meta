@@ -1,11 +1,9 @@
 fileFormatVersion: 2
-guid: ff9384356b420c746b4e931096f8a33b
+guid: ec13ae3082025e1478b8ea10893d2fdc
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences:
-  - MatchAlembicSubmeshWithFbxSubmeshCS: {fileID: 7200000, guid: 9dfeccded6633ec499f211ac065483ac,
-      type: 3}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -1,0 +1,43 @@
+#pragma kernel SubmeshMatch
+
+Buffer<float3> FbxVertexBuffer;
+Buffer<int> FbxIndexBuffer;
+Buffer<float3> AlembicVertexBuffer;
+Buffer<int> AlembicIndexBuffer;
+
+int FbxIndexStart;
+int FbxIndexCount;
+
+int AlembicIndexStart;
+int AlembicIndexCount;
+
+float3 FbxBoundsCenter;
+float3 FbxBoundsExtents;
+
+float Scale;
+
+RWBuffer<int> RWMatchCount;
+
+float InsideBox3D(float3 v, float3 bottomLeft, float3 topRight)
+{
+    float3 s = step(bottomLeft, v) - step(topRight, v);
+    return s.x * s.y * s.z; 
+}
+
+[numthreads(1,1,1)]
+void SubmeshMatch (uint id : SV_GroupID)
+{
+    float3 alembicVertex = AlembicVertexBuffer[AlembicIndexBuffer[id+AlembicIndexStart]]*Scale;
+    if(InsideBox3D(alembicVertex,FbxBoundsCenter-FbxBoundsExtents,FbxBoundsCenter+FbxBoundsExtents))
+    {
+        for(int i=0;i<FbxIndexCount;i++)
+        {
+            float3 fbxVertex = FbxVertexBuffer[FbxIndexBuffer[i+FbxIndexStart]];
+            if(distance(alembicVertex,fbxVertex)<(Scale*0.00001))
+            {
+                InterlockedAdd(RWMatchCount[0],1U);
+                break;
+            }
+        }
+    }
+}

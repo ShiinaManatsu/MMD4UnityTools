@@ -130,6 +130,9 @@ namespace MMDExtensions.Tools
                     Orthographic = reader.ReadBoolean()
                 }));
 
+            reader.Dispose();
+            stream.Dispose();
+
             return new VMD()
             {
                 FileName = modelName,
